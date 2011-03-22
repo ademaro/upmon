@@ -1,21 +1,27 @@
 import os, sys
 
-for c in open('servers.list'):
-    if (sys.platform == "win32"):
-        # WIN
-        f = os.popen("ping -n 1 " + str(c))
-        if f.read().count('TTL'):
-            print(("{0} DONE").format(c))
-        else:
-            print(("{0} is down").format(c))
-    else:
-        # POSIX
-        f = os.popen("ping -c 1 " + str(c))
+if (sys.platform == "win32"):
+        # win
+    ping_arg = '-n 1'
+else:
+        # posix
+    ping_arg = '-c 1'
+#else:
+#    print ('platform ' + sys.platform + ' is not supported')
 
-        if f.read().count('ttl'):
+for c in open('servers.list'):
+        f = os.popen("ping "+ ping_arg+ ' ' + str(c))
+        if f.read().lower().count('ttl'):
             print(("{0} DONE").format(c))
         else:
             print(("{0} is down").format(c))
+#    else:
+#        # POSIX
+#        f = os.popen("ping -c 1 " + str(c))
+#        if f.read().count('ttl'):
+#            print(("{0} DONE").format(c))
+#        else:
+#            print(("{0} is down").format(c))
 
 # cmd1 = 'ping -n 1 ' + str(c)
 # f = subprocess.getstatusoutput(cmd1)
