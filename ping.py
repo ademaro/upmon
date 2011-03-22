@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.1
 
 """
     A pure python ping implementation using raw socket.
@@ -170,7 +170,7 @@ def do_one(dest_addr, timeout):
     icmp = socket.getprotobyname("icmp")
     try:
         my_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
-    except socket.error, (errno, msg):
+    except socket.error as (errno, msg): # TODO: fix for python3
         if errno == 1:
             # Operation not permitted
             msg = msg + (
@@ -195,18 +195,18 @@ def verbose_ping(dest_addr, timeout = 2, count = 4):
     the result.
     """
     for i in xrange(count):
-        print "ping %s..." % dest_addr,
+        print ("ping %s..." % dest_addr,)
         try:
             delay  =  do_one(dest_addr, timeout)
-        except socket.gaierror, e:
-            print "failed. (socket error: '%s')" % e[1]
+        except socket.gaierror as e:
+            print ("failed. (socket error: '%s')" % e[1])
             break
 
         if delay  ==  None:
-            print "failed. (timeout within %ssec.)" % timeout
+            print ("failed. (timeout within %ssec.)" % timeout)
         else:
             delay  =  delay * 1000
-            print "get ping in %0.4fms" % delay
+            print ("get ping in %0.4fms" % delay)
     print
 
 
