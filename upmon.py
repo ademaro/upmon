@@ -20,9 +20,18 @@ def ping_host(srv_hostname):
 
 def fetch_hosts(primary = True):
     hostnames = []
-    for hostname in cursor.execute('select h from hosts_for_ping where p=?',(primary,)):
-        hostnames.append(hostname[0])
-    return hostnames
+    times = []
+    for hostname, time in cursor.execute('select h,t  from hosts_for_ping where p=?',(primary,)):
+        hostnames.append(hostname)
+        times.append(time)
+    return hostnames, times
+
+#def fetch_all():
+#    hostnames = []
+#    for hostname in cursor.execute('select * from hosts_for_ping where p=?',(primary,)):
+#        hostnames.append(hostname[0])
+#    return hostnames
+
 
 #создаем таблицу hostname,repeate_time,primary
 #cursor.execute("create table hosts_for_ping(h,t,p)")
@@ -41,9 +50,13 @@ def fetch_hosts(primary = True):
 #print(hostname, time_limit)
 
 #  Import DB from file
-for hostname in fetch_hosts(False):  ###TODO: false -> true
+host_pim = []
+hosts_pim = fetch_hosts(False)
+print(hosts_pim)
+
+for hostname in hosts_pim[0] :  ###TODO: false -> true
 #    ins_db(hostname)
    if ping_host(hostname) is True:
-        print(hostname + ' is OK')
+        print(hostname + ' is OK' )
    else:
         print(hostname + ' is DOWN')
