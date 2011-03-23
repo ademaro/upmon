@@ -1,4 +1,11 @@
 import os, sys
+import apsw
+
+connection = apsw.Connection("mondb")
+cursor = connection.cursor()
+
+def ins_db(hostname = [],repit_t = 5000,ch = False):
+        cursor.execute("insert into hosts_for_ping values(?,?,?)", (hostname.replace('\n',''),repit_t,ch))
 
 def ping_host(srv_hostname):
     if (sys.platform == "win32"):
@@ -11,8 +18,32 @@ def ping_host(srv_hostname):
     if f.read().lower().count('ttl'):
         return True
 
-for hostname in open('servers.list'):
-    if ping_host(hostname) is True:
-        print(hostname[:(len(hostname)-1)] + ' is OK')
-    else:
-        print(hostname[:(len(hostname)-1)] + ' is DOWN')
+def fetch_hosts(primary = True):
+    hostnames = []
+    for hostname in cursor.execute('select h from hosts_for_ping where p=?',(primary,)):
+        hostnames.append(hostname[0])
+    return hostnames
+
+#создаем таблицу hostname,repeate_time,primary
+#cursor.execute("create table hosts_for_ping(h,t,p)")
+#cursor.execute("drop table hosts_for_ping")
+
+
+
+#for hostname in  cursor.execute('select h from hosts_for_ping'):
+#    cursor.execute('update hosts_for_ping set h=?',(str(hostname).replace('\n','',),))
+
+
+#cursor.execute('drop table hosts_for_ping')
+
+
+#for hostname, time_limit in cursor.execute('select h,t from hosts_for_ping where p=?',(True,)):
+#print(hostname, time_limit)
+
+#  Import DB from file
+for hostname in fetch_hosts(False):  ###TODO: false -> true
+#    ins_db(hostname)
+   if ping_host(hostname) is True:
+        print(hostname + ' is OK')
+   else:
+        print(hostname + ' is DOWN')
