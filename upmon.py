@@ -1,11 +1,5 @@
 import os, sys
-import apsw
-
-connection = apsw.Connection("mondb")
-cursor = connection.cursor()
-
-def ins_db(hostname = [],repit_t = 5000,ch = False):
-        cursor.execute("insert into hosts_for_ping values(?,?,?)", (hostname.replace('\n',''),repit_t,ch))
+import sqlite3
 
 def ping_host(srv_hostname):
     if (sys.platform == "win32"):
@@ -18,10 +12,13 @@ def ping_host(srv_hostname):
     if f.read().lower().count('ttl'):
         return True
 
+#def ins_db(hostname = [],repit_t = 5000,ch = False):
+#    c.execute("insert into hosts_for_ping values(?,?,?)", (hostname.replace('\n',''),repit_t,ch))
+
 def fetch_hosts(primary = True):
     hostnames = []
     times = []
-    for hostname, time in cursor.execute('select h,t  from hosts_for_ping where p=?',(primary,)):
+    for hostname, time in c.execute('select h,t  from hosts_for_ping where p=?',(primary,)):
         hostnames.append(hostname)
         times.append(time)
     return hostnames, times
@@ -33,25 +30,32 @@ def fetch_hosts(primary = True):
 #    return hostnames
 
 
-#создаем таблицу hostname,repeate_time,primary
-#cursor.execute("create table hosts_for_ping(h,t,p)")
+connection =  sqlite3.connect("upmondb")
+c = connection.cursor()
+
+#создаем таблицу с полями hostname,repeate_time_limit,primary
+c.execute("create table hosts_for_ping(h,t,p)")
+
+#init Import DB from file
+#for hostname in open('servers.list'):
+#    c.execute('update hosts_for_ping set h=?',(str(hostname).replace('\n','',),))
+#or insert init data
+for h in [('mysql.z-gu.ru', 5000, True),
+          ('stat.z-gu.ru',  5000, True),
+          ('tea.z-gu.ru',   5000, True),
+          ('koc.z-gu.ru',   5000, True),
+         ]:
+    c.execute('insert into hosts_for_ping values (?,?,?)', h)
+
+#удаляем таблицу
 #cursor.execute("drop table hosts_for_ping")
-
-
-
-#for hostname in  cursor.execute('select h from hosts_for_ping'):
-#    cursor.execute('update hosts_for_ping set h=?',(str(hostname).replace('\n','',),))
-
-
-#cursor.execute('drop table hosts_for_ping')
 
 
 #for hostname, time_limit in cursor.execute('select h,t from hosts_for_ping where p=?',(True,)):
 #print(hostname, time_limit)
 
-#  Import DB from file
 host_pim = []
-hosts_pim = fetch_hosts(False)
+hosts_pim = fetch_hosts()
 print(hosts_pim)
 
 for hostname in hosts_pim[0] :  ###TODO: false -> true
