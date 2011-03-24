@@ -38,7 +38,7 @@ def read_arg():
     
 def ins_db(hostname = [],repit_t = 5000,ch = True):
     try:
-        c.execute('create table ping_stat(h,s,t)')
+        c.execute('create table hosts_for_ping(h,t,p)')
     except sqlite3.OperationalError:
         c.execute("insert into hosts_for_ping values(?,?,?)", (hostname,repit_t,ch))
         connection.commit()
