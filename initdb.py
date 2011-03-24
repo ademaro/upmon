@@ -1,3 +1,8 @@
+import sqlite3
+
+connection =  sqlite3.connect("upmondb")
+c = connection.cursor()
+
 #создаем таблицу с полями hostname,repeate_time_limit,primary
 #c.execute("create table hosts_for_ping(h,t,p)")
 
@@ -6,16 +11,22 @@
 #    c.execute('update hosts_for_ping set h=?',(str(hostname).replace('\n','',),))
 
 #or insert init data
-#for h in [('mysql.z-gu.ru', 5000, True),
-#          ('stat.z-gu.ru',  5000, True),
-#          ('tea.z-gu.ru',   5000, True),
-#          ('koc.z-gu.ru',   5000, True),
-#         ]:
-#    c.execute('insert into hosts_for_ping values (?,?,?)', h)
+for h in [('mysql.z-gu.ru', 5000, True),
+          ('stat.z-gu.ru',  5000, True),
+          ('tea.z-gu.ru',   5000, True),
+          ('koc.z-gu.ru',   5000, True),
+         ]:
+    c.execute('insert into hosts_for_ping values (?,?,?)', h)
+
+#save changes
+connection.commit()
 
 #удаляем таблицу
 #cursor.execute("drop table hosts_for_ping")
 
+#close the cursor if we are done with it
+c.close()
 
+#hz:
 #for hostname, time_limit in cursor.execute('select h,t from hosts_for_ping where p=?',(True,)):
 #print(hostname, time_limit)
