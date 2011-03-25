@@ -12,9 +12,6 @@ def ping_host(srv_hostname):
     if f.read().lower().count('ttl'):
         return True
 
-#def ins_db(hostname = [],repit_t = 5000,ch = False):
-#    c.execute("insert into hosts_for_ping values(?,?,?)", (hostname.replace('\n',''),repit_t,ch))
-
 def fetch_hosts(primary = True):
     hostnames = []
     times = []
@@ -38,8 +35,10 @@ hosts_pim = fetch_hosts()
 print(hosts_pim)
 
 for hostname in hosts_pim[0]:
-#    ins_db(hostname)
    if ping_host(hostname) is True:
         print(hostname + ' is OK' )
+        c.execute('insert into hosts_for_ping values (?,?,?)', h)
    else:
         print(hostname + ' is DOWN')
+
+c.close()
