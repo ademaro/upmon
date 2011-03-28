@@ -33,15 +33,23 @@ def read_arg():
     if len(args) ==1 :
         return args[0]
     else:
-        print(args[0],args[1])
+#        print(args[0],args[1])
         return args[0] #, args[1]  #TODO: убрать костыль
-    
+
 def ins_db(hostname = [],repit_t = 5000,ch = True):
     try:
         c.execute('create table hosts_for_ping(h,t,p)')
     except sqlite3.OperationalError:
         c.execute("insert into hosts_for_ping values(?,?,?)", (hostname,repit_t,ch))
         connection.commit()
+
+def del_db(hostmane):
+    try:
+        c.execute('delete from hosts_for_ping where h=?',(hostmane,))
+        connection.commit()
+    except sqlite3.OperationalError:
+        return 
+
 
 def fetch_hosts(primary = True):
     hostnames = []
@@ -71,9 +79,10 @@ if len(sys.argv) > 1:
         hlp()
     elif sys.argv[1] == 'add':                  #если добавляем
         ins_db(read_arg())
+    elif sys.argv[1] == 'del':
+        del_db(read_arg())
 
 ###c.execute('drop table ping_stat')
-
 
 host_primary = []
 hosts_primary = fetch_hosts()
@@ -94,4 +103,5 @@ for i in c.execute('select * from hosts_for_ping'):
 print('\n2 табл\n')
 for i in c.execute('select * from ping_stat'):
     print(i)
+    
 c.close()
