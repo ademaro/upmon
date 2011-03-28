@@ -54,9 +54,13 @@ def del_db(hostmane):
 def fetch_hosts(primary = True):
     hostnames = []
     times = []
-    for hostname, time in c.execute('select h,t  from hosts_for_ping where p=?',(primary,)):
-        hostnames.append(hostname)
-        times.append(time)
+    try:
+        for hostname, time in c.execute('select h,t  from hosts_for_ping where p=?',(primary,)):
+            hostnames.append(hostname)
+            times.append(time)
+    except sqlite3.OperationalError:
+        print('DB is empty \n')
+        hlp()
     return hostnames, times
 
 
