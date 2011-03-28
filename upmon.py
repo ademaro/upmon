@@ -1,5 +1,6 @@
 import os, sys
 import sqlite3
+from platform import node
 
 def ping_host(srv_hostname):
     if (sys.platform == "win32"):
@@ -59,7 +60,7 @@ def fetch_hosts(primary = True):
             hostnames.append(hostname)
             times.append(time)
     except sqlite3.OperationalError:
-        print('DB is empty \n')
+        print('DB is empty, add host first \n')
         hlp()
     return hostnames, times
 
@@ -92,7 +93,7 @@ host_primary = []
 hosts_primary = fetch_hosts()
 for hostname in hosts_primary[0]:
 #    ins_db(hostname)
-    servname = 'test'#TODO insert servn
+    servname = node()
     try:
         c.execute('create table ping_stat(h,s,t)')
     except sqlite3.OperationalError:
